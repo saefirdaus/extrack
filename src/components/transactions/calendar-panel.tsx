@@ -79,12 +79,9 @@ export function CalendarPanel({ value, onChange, onClose }: CalendarPanelProps) 
     <div className="w-80 bg-zinc-900 rounded-3xl shadow-2xl border border-zinc-800 p-5 shrink-0 transition-all duration-300 ease-out animate-in fade-in slide-in-from-left-6 zoom-in-95 backdrop-blur-xl">
       {/* Header */}
       <div className="flex items-center justify-between pb-3 mb-4 border-b border-zinc-800">
-        <div className="flex items-center space-x-2">
-          <div className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse" />
-          <h3 className="text-sm font-bold text-zinc-100 tracking-tight">
-            Pilih Tanggal Transaksi
-          </h3>
-        </div>
+        <h3 className="text-sm font-bold text-zinc-100 tracking-tight">
+          Pilih Tanggal Transaksi
+        </h3>
         <button
           type="button"
           onClick={onClose}
@@ -153,7 +150,7 @@ export function CalendarPanel({ value, onChange, onClose }: CalendarPanelProps) 
               onClick={() => handleSelectDay(day)}
               className={`h-9 w-9 mx-auto flex items-center justify-center rounded-xl text-xs font-semibold transition-all transform active:scale-90 ${
                 isSelected
-                  ? 'bg-blue-600 text-white font-bold shadow-lg shadow-blue-500/30 scale-105'
+                  ? 'bg-blue-600 text-white font-bold scale-105'
                   : isToday
                   ? 'bg-blue-500/10 text-blue-400 font-bold border border-blue-500/30 hover:bg-blue-500/20 hover:scale-105'
                   : 'text-zinc-300 hover:bg-zinc-800 hover:scale-105'

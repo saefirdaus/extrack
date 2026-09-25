@@ -114,7 +114,7 @@ export function TransactionForm({
               onClick={() => setType('income')}
               className={`flex items-center justify-center py-3 px-4 rounded-2xl text-sm font-medium border transition-all duration-200 transform active:scale-95 ${
                 type === 'income'
-                  ? 'bg-emerald-500/10 border-emerald-500/50 text-emerald-400 font-bold shadow-lg shadow-emerald-500/10'
+                  ? 'bg-emerald-500/10 border-emerald-500/50 text-emerald-400 font-bold'
                   : 'bg-zinc-950 border-zinc-800 text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200'
               }`}
             >
@@ -126,7 +126,6 @@ export function TransactionForm({
                 onChange={() => setType('income')}
                 className="sr-only"
               />
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 mr-2 animate-pulse" />
               Pemasukan
             </button>
             <button
@@ -134,7 +133,7 @@ export function TransactionForm({
               onClick={() => setType('expense')}
               className={`flex items-center justify-center py-3 px-4 rounded-2xl text-sm font-medium border transition-all duration-200 transform active:scale-95 ${
                 type === 'expense'
-                  ? 'bg-rose-500/10 border-rose-500/50 text-rose-400 font-bold shadow-lg shadow-rose-500/10'
+                  ? 'bg-rose-500/10 border-rose-500/50 text-rose-400 font-bold'
                   : 'bg-zinc-950 border-zinc-800 text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200'
               }`}
             >
@@ -146,7 +145,6 @@ export function TransactionForm({
                 onChange={() => setType('expense')}
                 className="sr-only"
               />
-              <span className="w-2.5 h-2.5 rounded-full bg-rose-400 mr-2 animate-pulse" />
               Pengeluaran
             </button>
           </div>
@@ -215,7 +213,7 @@ export function TransactionForm({
             onClick={onToggleCalendar}
             className={`w-full flex items-center justify-between rounded-2xl border px-4 py-3 text-sm font-medium transition-all duration-200 bg-zinc-950 ${
               isCalendarOpen
-                ? 'border-blue-500 ring-4 ring-blue-500/10 shadow-sm'
+                ? 'border-blue-500 ring-4 ring-blue-500/10'
                 : state?.errors?.transactionDate
                 ? 'border-rose-500/50 focus:ring-rose-500/20'
                 : 'border-zinc-800 hover:border-zinc-700 focus:ring-4 focus:ring-blue-500/10'
@@ -224,7 +222,7 @@ export function TransactionForm({
             <span className="text-zinc-100 font-semibold">
               {currentDate ? formatDisplayDate(currentDate) : 'Pilih Tanggal'}
             </span>
-            <div className={`p-1.5 rounded-xl transition-all duration-300 ${isCalendarOpen ? 'rotate-180 bg-blue-500/10 text-blue-400 shadow-xs' : 'text-blue-400 hover:bg-zinc-800'}`}>
+            <div className={`p-1.5 rounded-xl transition-all duration-300 ${isCalendarOpen ? 'rotate-180 bg-blue-500/10 text-blue-400' : 'text-blue-400 hover:bg-zinc-800'}`}>
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
@@ -249,7 +247,7 @@ export function TransactionForm({
           <button
             type="submit"
             disabled={isPending}
-            className="bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-2.5 rounded-2xl text-sm transition-all duration-200 shadow-lg shadow-blue-600/25 hover:shadow-blue-600/40 disabled:opacity-50 flex items-center justify-center min-w-[150px] active:scale-95"
+            className="bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-2.5 rounded-2xl text-sm transition-all duration-200 disabled:opacity-50 flex items-center justify-center min-w-[150px] active:scale-95"
           >
             {isPending ? (
               <>

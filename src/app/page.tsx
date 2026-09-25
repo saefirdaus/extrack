@@ -11,11 +11,11 @@ export default function Home() {
         </div>
         <h1 className="text-3xl font-bold text-zinc-100 tracking-tight mb-2">ExTrack</h1>
         <p className="text-zinc-400 text-sm mb-6 leading-relaxed">
-          Platform Manajemen Keuangan & Arus Kas Mahasiswa (Dark Mode)
+          Platform Manajemen Keuangan & Arus Kas Mahasiswa
         </p>
         <Link
           href="/dashboard/transactions"
-          className="inline-flex items-center justify-center w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 rounded-2xl transition-all duration-200 shadow-lg shadow-blue-600/25 active:scale-95"
+          className="inline-flex items-center justify-center w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 rounded-2xl transition-all duration-200 active:scale-95"
         >
           Buka Manajemen Transaksi
         </Link>

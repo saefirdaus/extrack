@@ -50,11 +50,10 @@ export function TransactionsView({ items, status }: TransactionsViewProps) {
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex flex-col justify-center max-w-5xl mx-auto px-4 py-8">
-      {/* Header section with Dark Tech glass card */}
+      {/* Header section */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4 bg-zinc-900/90 p-6 rounded-3xl border border-zinc-800/80 shadow-2xl backdrop-blur-xl">
         <div>
-          <div className="flex items-center space-x-2 mb-1">
-            <span className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse" />
+          <div className="mb-1">
             <span className="text-xs font-bold text-blue-400 uppercase tracking-widest">
               Financial Dashboard
             </span>
@@ -69,7 +68,7 @@ export function TransactionsView({ items, status }: TransactionsViewProps) {
         <button
           type="button"
           onClick={handleOpenAdd}
-          className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-3 rounded-2xl text-sm transition-all duration-200 shadow-lg shadow-blue-600/25 hover:shadow-blue-600/40 active:scale-95 cursor-pointer"
+          className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-3 rounded-2xl text-sm transition-all duration-200 active:scale-95 cursor-pointer"
         >
           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
