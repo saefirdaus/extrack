@@ -35,8 +35,13 @@ export default async function EditTransactionPage({ params }: PageProps) {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8">
-      <TransactionForm initialData={item} />
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+      <div className="bg-white w-full max-w-md rounded-2xl shadow-xl border border-gray-100 p-6">
+        <h2 className="text-xl font-bold text-gray-900 mb-5 pb-3 border-b border-gray-100">
+          Edit Transaksi
+        </h2>
+        <TransactionForm initialData={item} />
+      </div>
     </div>
   );
 }
