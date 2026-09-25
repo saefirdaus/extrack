@@ -62,7 +62,6 @@ export function CustomDatePicker({
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        // If clicking outside container, close
         const target = e.target as HTMLElement;
         if (!target.closest('.calendar-side-panel')) {
           closeCalendar();
@@ -131,25 +130,24 @@ export function CustomDatePicker({
 
   const CalendarContent = (
     <div className="w-full">
-      {/* Month & Year Navigation Header */}
-      <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+      <div className="flex items-center justify-between mb-4 pb-3 border-b border-zinc-800">
         <button
           type="button"
           onClick={handlePrevMonth}
-          className="p-2 rounded-xl text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-all active:scale-90"
+          className="p-2 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-all active:scale-90"
           title="Bulan Sebelumnya"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <span className="text-sm font-bold text-gray-900 tracking-tight">
+        <span className="text-sm font-bold text-zinc-100 tracking-tight">
           {MONTH_NAMES[currentMonth]} {currentYear}
         </span>
         <button
           type="button"
           onClick={handleNextMonth}
-          className="p-2 rounded-xl text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-all active:scale-90"
+          className="p-2 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-all active:scale-90"
           title="Bulan Berikutnya"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -158,16 +156,14 @@ export function CustomDatePicker({
         </button>
       </div>
 
-      {/* Days of Week Header */}
       <div className="grid grid-cols-7 gap-1 text-center mb-2">
         {DAY_NAMES.map((d, i) => (
-          <span key={i} className="text-xs font-bold text-gray-400 py-1">
+          <span key={i} className="text-xs font-bold text-zinc-500 py-1">
             {d}
           </span>
         ))}
       </div>
 
-      {/* Day Grid */}
       <div className="grid grid-cols-7 gap-1.5 text-center">
         {Array.from({ length: firstDayOfWeek }).map((_, i) => (
           <span key={`empty-${i}`} />
@@ -189,8 +185,8 @@ export function CustomDatePicker({
                 isSelected
                   ? 'bg-blue-600 text-white font-bold shadow-lg shadow-blue-500/30 scale-105'
                   : isToday
-                  ? 'bg-blue-50 text-blue-600 font-bold border border-blue-200 hover:bg-blue-100 hover:scale-105'
-                  : 'text-gray-700 hover:bg-gray-100 hover:scale-105'
+                  ? 'bg-blue-500/10 text-blue-400 font-bold border border-blue-500/30 hover:bg-blue-500/20 hover:scale-105'
+                  : 'text-zinc-300 hover:bg-zinc-800 hover:scale-105'
               }`}
             >
               {day}
@@ -199,13 +195,12 @@ export function CustomDatePicker({
         })}
       </div>
 
-      {/* Today Button Footer */}
-      <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
-        <span className="text-xs text-gray-400 font-medium">Klik tanggal untuk memilih</span>
+      <div className="mt-4 pt-3 border-t border-zinc-800 flex items-center justify-between">
+        <span className="text-xs text-zinc-500 font-medium">Klik tanggal untuk memilih</span>
         <button
           type="button"
           onClick={handleSelectToday}
-          className="text-xs font-bold text-blue-600 hover:text-blue-800 transition py-1 px-3.5 rounded-lg bg-blue-50 hover:bg-blue-100 active:scale-95"
+          className="text-xs font-bold text-blue-400 hover:text-blue-300 transition py-1 px-3.5 rounded-xl bg-blue-500/10 border border-blue-500/20 hover:bg-blue-500/20 active:scale-95"
         >
           Hari Ini
         </button>
@@ -217,38 +212,35 @@ export function CustomDatePicker({
     <div ref={containerRef} className="relative w-full">
       <input type="hidden" name={name} value={value} />
 
-      {/* Input Trigger Button */}
       <button
         type="button"
         onClick={toggleCalendar}
-        className={`w-full flex items-center justify-between rounded-xl border px-4 py-3 text-sm font-medium transition-all duration-200 bg-white ${
+        className={`w-full flex items-center justify-between rounded-2xl border px-4 py-3 text-sm font-medium transition-all duration-200 bg-zinc-950 ${
           isOpen
             ? 'border-blue-500 ring-4 ring-blue-500/10 shadow-sm'
             : error
-            ? 'border-red-300 focus:ring-red-500'
-            : 'border-gray-300 hover:border-gray-400 focus:ring-2 focus:ring-blue-500'
+            ? 'border-rose-500/50 focus:ring-rose-500/20'
+            : 'border-zinc-800 hover:border-zinc-700 focus:ring-4 focus:ring-blue-500/10'
         }`}
       >
-        <span className="text-gray-900 font-medium">
+        <span className="text-zinc-100 font-medium">
           {value ? formatDisplay(value) : 'Pilih Tanggal'}
         </span>
-        <div className={`p-1 rounded-lg transition-transform duration-300 ${isOpen ? 'rotate-180 bg-blue-50 text-blue-600' : 'text-blue-600'}`}>
+        <div className={`p-1 rounded-xl transition-transform duration-300 ${isOpen ? 'rotate-180 bg-blue-500/10 text-blue-400' : 'text-blue-400'}`}>
           <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
         </div>
       </button>
 
-      {/* Standard Dropdown fallback if not side-panel mode */}
       {!isSidePanelMode && isOpen && (
-        <div className="absolute z-50 mt-2 w-80 bg-white rounded-3xl shadow-2xl border border-gray-100 p-5 animate-in fade-in zoom-in-95 duration-200">
+        <div className="absolute z-50 mt-2 w-80 bg-zinc-900 border border-zinc-800 rounded-3xl shadow-2xl p-5 animate-in fade-in zoom-in-95 duration-200 backdrop-blur-xl">
           {CalendarContent}
         </div>
       )}
 
-      {/* Export CalendarContent helper if side-panel mode is handled by parent */}
       {isSidePanelMode && isOpen && (
-        <div className="calendar-side-panel hidden">{/* Signal open to parent */}</div>
+        <div className="calendar-side-panel hidden"></div>
       )}
     </div>
   );

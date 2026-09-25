@@ -51,27 +51,27 @@ export function TransactionModal({ isOpen, onClose, initialData }: TransactionMo
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md p-4 overflow-y-auto transition-all duration-300 animate-in fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4 overflow-y-auto transition-all duration-300 animate-in fade-in">
       <div
         className="flex flex-col md:flex-row items-center justify-center gap-6 transition-all duration-300 ease-out max-w-4xl w-full my-8"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Main Form Modal Card */}
-        <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-gray-100/90 p-6 sm:p-7 relative transition-all duration-300 ease-out transform animate-in zoom-in-95">
+        <div className="bg-zinc-900/95 w-full max-w-md rounded-3xl shadow-2xl border border-zinc-800/90 p-6 sm:p-7 relative transition-all duration-300 ease-out transform animate-in zoom-in-95 backdrop-blur-xl">
           {/* Header */}
-          <div className="flex items-center justify-between pb-4 mb-5 border-b border-gray-100">
+          <div className="flex items-center justify-between pb-4 mb-5 border-b border-zinc-800/80">
             <div>
-              <h2 className="text-xl font-bold text-gray-900 tracking-tight">
+              <h2 className="text-xl font-bold text-zinc-100 tracking-tight">
                 {initialData ? 'Edit Transaksi' : 'Catat Transaksi Baru'}
               </h2>
-              <p className="text-xs text-gray-400 mt-0.5 font-medium">
+              <p className="text-xs text-zinc-400 mt-0.5 font-medium">
                 {initialData ? 'Perbarui detail transaksi keuangan' : 'Isi rincian pemasukan atau pengeluaran'}
               </p>
             </div>
             <button
               type="button"
               onClick={onClose}
-              className="p-2 rounded-xl text-gray-400 hover:text-gray-700 hover:bg-gray-100/80 transition-all duration-200 active:scale-90"
+              className="p-2 rounded-xl text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-all duration-200 active:scale-90"
               title="Tutup"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

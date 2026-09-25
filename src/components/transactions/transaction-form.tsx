@@ -94,8 +94,8 @@ export function TransactionForm({
   return (
     <div className="w-full">
       {state?.errors?._form && (
-        <div className="p-3.5 mb-5 rounded-2xl bg-red-50 text-red-700 text-sm border border-red-200 flex items-start gap-2.5 animate-in fade-in">
-          <svg className="w-5 h-5 text-red-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="p-3.5 mb-5 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm flex items-start gap-2.5 animate-in fade-in">
+          <svg className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <span className="font-medium">{state.errors._form}</span>
@@ -105,8 +105,8 @@ export function TransactionForm({
       <form action={formAction} className="space-y-5">
         {/* Jenis Transaksi */}
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            Jenis Transaksi <span className="text-red-500">*</span>
+          <label className="block text-sm font-semibold text-zinc-300 mb-2">
+            Jenis Transaksi <span className="text-rose-500">*</span>
           </label>
           <div className="grid grid-cols-2 gap-3">
             <button
@@ -114,8 +114,8 @@ export function TransactionForm({
               onClick={() => setType('income')}
               className={`flex items-center justify-center py-3 px-4 rounded-2xl text-sm font-medium border transition-all duration-200 transform active:scale-95 ${
                 type === 'income'
-                  ? 'bg-green-50/80 border-green-500 text-green-700 font-bold shadow-sm shadow-green-500/10'
-                  : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50/80'
+                  ? 'bg-emerald-500/10 border-emerald-500/50 text-emerald-400 font-bold shadow-lg shadow-emerald-500/10'
+                  : 'bg-zinc-950 border-zinc-800 text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200'
               }`}
             >
               <input
@@ -126,7 +126,7 @@ export function TransactionForm({
                 onChange={() => setType('income')}
                 className="sr-only"
               />
-              <span className="w-2.5 h-2.5 rounded-full bg-green-500 mr-2 animate-pulse" />
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 mr-2 animate-pulse" />
               Pemasukan
             </button>
             <button
@@ -134,8 +134,8 @@ export function TransactionForm({
               onClick={() => setType('expense')}
               className={`flex items-center justify-center py-3 px-4 rounded-2xl text-sm font-medium border transition-all duration-200 transform active:scale-95 ${
                 type === 'expense'
-                  ? 'bg-red-50/80 border-red-500 text-red-700 font-bold shadow-sm shadow-red-500/10'
-                  : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50/80'
+                  ? 'bg-rose-500/10 border-rose-500/50 text-rose-400 font-bold shadow-lg shadow-rose-500/10'
+                  : 'bg-zinc-950 border-zinc-800 text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200'
               }`}
             >
               <input
@@ -146,19 +146,19 @@ export function TransactionForm({
                 onChange={() => setType('expense')}
                 className="sr-only"
               />
-              <span className="w-2.5 h-2.5 rounded-full bg-red-500 mr-2 animate-pulse" />
+              <span className="w-2.5 h-2.5 rounded-full bg-rose-400 mr-2 animate-pulse" />
               Pengeluaran
             </button>
           </div>
           {state?.errors?.type && (
-            <p className="mt-1 text-xs text-red-600 font-medium">{state.errors.type}</p>
+            <p className="mt-1 text-xs text-rose-400 font-medium">{state.errors.type}</p>
           )}
         </div>
 
         {/* Nominal Field */}
         <div>
-          <label htmlFor="amount-display" className="block text-sm font-semibold text-gray-700 mb-1.5">
-            Nominal <span className="text-red-500">*</span>
+          <label htmlFor="amount-display" className="block text-sm font-semibold text-zinc-300 mb-1.5">
+            Nominal <span className="text-rose-500">*</span>
           </label>
           <input type="hidden" name="amount" value={rawAmount} />
           <input
@@ -168,21 +168,21 @@ export function TransactionForm({
             value={displayAmount}
             onChange={handleAmountChange}
             placeholder="Rp 50.000"
-            className={`w-full rounded-2xl border px-4 py-3 text-sm font-bold text-gray-900 transition-all duration-200 focus:outline-none focus:ring-4 bg-white ${
+            className={`w-full rounded-2xl border px-4 py-3 text-sm font-bold text-zinc-100 placeholder:text-zinc-600 transition-all duration-200 focus:outline-none focus:ring-4 bg-zinc-950 ${
               state?.errors?.amount
-                ? 'border-red-300 focus:ring-red-500/20'
-                : 'border-gray-200 hover:border-gray-300 focus:border-blue-500 focus:ring-blue-500/10'
+                ? 'border-rose-500/50 focus:ring-rose-500/20'
+                : 'border-zinc-800 hover:border-zinc-700 focus:border-blue-500 focus:ring-blue-500/10'
             }`}
           />
           {state?.errors?.amount && (
-            <p className="mt-1 text-xs text-red-600 font-medium">{state.errors.amount}</p>
+            <p className="mt-1 text-xs text-rose-400 font-medium">{state.errors.amount}</p>
           )}
         </div>
 
         {/* Keterangan / Deskripsi */}
         <div>
-          <label htmlFor="description" className="block text-sm font-semibold text-gray-700 mb-1.5">
-            Keterangan / Deskripsi <span className="text-red-500">*</span>
+          <label htmlFor="description" className="block text-sm font-semibold text-zinc-300 mb-1.5">
+            Keterangan / Deskripsi <span className="text-rose-500">*</span>
           </label>
           <input
             id="description"
@@ -193,55 +193,55 @@ export function TransactionForm({
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Contoh: Beli Makan Siang / Uang Saku"
-            className={`w-full rounded-2xl border px-4 py-3 text-sm text-gray-900 font-medium transition-all duration-200 focus:outline-none focus:ring-4 bg-white ${
+            className={`w-full rounded-2xl border px-4 py-3 text-sm text-zinc-100 font-medium placeholder:text-zinc-600 transition-all duration-200 focus:outline-none focus:ring-4 bg-zinc-950 ${
               state?.errors?.description
-                ? 'border-red-300 focus:ring-red-500/20'
-                : 'border-gray-200 hover:border-gray-300 focus:border-blue-500 focus:ring-blue-500/10'
+                ? 'border-rose-500/50 focus:ring-rose-500/20'
+                : 'border-zinc-800 hover:border-zinc-700 focus:border-blue-500 focus:ring-blue-500/10'
             }`}
           />
           {state?.errors?.description && (
-            <p className="mt-1 text-xs text-red-600 font-medium">{state.errors.description}</p>
+            <p className="mt-1 text-xs text-rose-400 font-medium">{state.errors.description}</p>
           )}
         </div>
 
         {/* Tanggal Transaksi Trigger */}
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-            Tanggal Transaksi <span className="text-red-500">*</span>
+          <label className="block text-sm font-semibold text-zinc-300 mb-1.5">
+            Tanggal Transaksi <span className="text-rose-500">*</span>
           </label>
           <input type="hidden" name="transactionDate" value={currentDate} />
           <button
             type="button"
             onClick={onToggleCalendar}
-            className={`w-full flex items-center justify-between rounded-2xl border px-4 py-3 text-sm font-medium transition-all duration-200 bg-white ${
+            className={`w-full flex items-center justify-between rounded-2xl border px-4 py-3 text-sm font-medium transition-all duration-200 bg-zinc-950 ${
               isCalendarOpen
                 ? 'border-blue-500 ring-4 ring-blue-500/10 shadow-sm'
                 : state?.errors?.transactionDate
-                ? 'border-red-300 focus:ring-red-500'
-                : 'border-gray-200 hover:border-gray-300 focus:ring-4 focus:ring-blue-500/10'
+                ? 'border-rose-500/50 focus:ring-rose-500/20'
+                : 'border-zinc-800 hover:border-zinc-700 focus:ring-4 focus:ring-blue-500/10'
             }`}
           >
-            <span className="text-gray-900 font-semibold">
+            <span className="text-zinc-100 font-semibold">
               {currentDate ? formatDisplayDate(currentDate) : 'Pilih Tanggal'}
             </span>
-            <div className={`p-1.5 rounded-xl transition-all duration-300 ${isCalendarOpen ? 'rotate-180 bg-blue-50 text-blue-600 shadow-xs' : 'text-blue-600 hover:bg-blue-50'}`}>
+            <div className={`p-1.5 rounded-xl transition-all duration-300 ${isCalendarOpen ? 'rotate-180 bg-blue-500/10 text-blue-400 shadow-xs' : 'text-blue-400 hover:bg-zinc-800'}`}>
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </div>
           </button>
           {state?.errors?.transactionDate && (
-            <p className="mt-1 text-xs text-red-600 font-medium">{state.errors.transactionDate}</p>
+            <p className="mt-1 text-xs text-rose-400 font-medium">{state.errors.transactionDate}</p>
           )}
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-end space-x-3 pt-5 border-t border-gray-100">
+        <div className="flex items-center justify-end space-x-3 pt-5 border-t border-zinc-800/80">
           {onCancel && (
             <button
               type="button"
               onClick={onCancel}
-              className="px-5 py-2.5 rounded-2xl text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-all duration-200 active:scale-95"
+              className="px-5 py-2.5 rounded-2xl text-sm font-semibold text-zinc-300 bg-zinc-800 hover:bg-zinc-700 transition-all duration-200 active:scale-95"
             >
               Batal
             </button>
@@ -249,7 +249,7 @@ export function TransactionForm({
           <button
             type="submit"
             disabled={isPending}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2.5 rounded-2xl text-sm transition-all duration-200 shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/30 disabled:opacity-50 flex items-center justify-center min-w-[150px] active:scale-95"
+            className="bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-2.5 rounded-2xl text-sm transition-all duration-200 shadow-lg shadow-blue-600/25 hover:shadow-blue-600/40 disabled:opacity-50 flex items-center justify-center min-w-[150px] active:scale-95"
           >
             {isPending ? (
               <>

@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "ExTrack - Expense Tracker",
-  description: "Aplikasi Manajemen Transaksi Keuangan Mahasiswa",
+  description: "Aplikasi Manajemen Transaksi Keuangan Mahasiswa (Dark Mode)",
 };
 
 export default function RootLayout({
@@ -24,10 +24,12 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      lang="id"
+      className={`${geistSans.variable} ${geistMono.variable} dark h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-gray-50 text-gray-900">{children}</body>
+      <body className="min-h-full flex flex-col bg-zinc-950 text-zinc-100 font-sans selection:bg-blue-500/30 selection:text-blue-200">
+        {children}
+      </body>
     </html>
   );
 }
