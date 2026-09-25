@@ -1,14 +1,11 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-interface CustomDatePickerProps {
-  value: string; // YYYY-MM-DD
+interface CalendarPanelProps {
+  value: string;
   onChange: (val: string) => void;
-  name?: string;
-  error?: string;
-  onToggleOpen?: (isOpen: boolean) => void;
-  isSidePanelMode?: boolean;
+  onClose: () => void;
 }
 
 const MONTH_NAMES = [
@@ -18,17 +15,7 @@ const MONTH_NAMES = [
 
 const DAY_NAMES = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
 
-export function CustomDatePicker({
-  value,
-  onChange,
-  name = 'transactionDate',
-  error,
-  onToggleOpen,
-  isSidePanelMode = false,
-}: CustomDatePickerProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-
+export function CalendarPanel({ value, onChange, onClose }: CalendarPanelProps) {
   const parseDate = (str: string) => {
     if (!str) return new Date();
     const parts = str.split('-').map(Number);
@@ -48,49 +35,11 @@ export function CustomDatePicker({
     setCurrentMonth(d.getMonth());
   }, [value]);
 
-  const toggleCalendar = () => {
-    const nextState = !isOpen;
-    setIsOpen(nextState);
-    if (onToggleOpen) onToggleOpen(nextState);
-  };
-
-  const closeCalendar = () => {
-    setIsOpen(false);
-    if (onToggleOpen) onToggleOpen(false);
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        // If clicking outside container, close
-        const target = e.target as HTMLElement;
-        if (!target.closest('.calendar-side-panel')) {
-          closeCalendar();
-        }
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
   const formatISO = (d: Date) => {
     const year = d.getFullYear();
     const month = String(d.getMonth() + 1).padStart(2, '0');
     const day = String(d.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
-  };
-
-  const formatDisplay = (str: string) => {
-    try {
-      const d = parseDate(str);
-      return new Intl.DateTimeFormat('id-ID', {
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric'
-      }).format(d);
-    } catch {
-      return str;
-    }
   };
 
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
@@ -116,9 +65,7 @@ export function CustomDatePicker({
 
   const handleSelectDay = (day: number) => {
     const newDate = new Date(currentYear, currentMonth, day);
-    const dateStr = formatISO(newDate);
-    onChange(dateStr);
-    closeCalendar();
+    onChange(formatISO(newDate));
   };
 
   const handleSelectToday = () => {
@@ -126,17 +73,36 @@ export function CustomDatePicker({
     onChange(formatISO(today));
     setCurrentYear(today.getFullYear());
     setCurrentMonth(today.getMonth());
-    closeCalendar();
   };
 
-  const CalendarContent = (
-    <div className="w-full">
+  return (
+    <div className="w-80 bg-white rounded-3xl shadow-2xl border border-gray-100 p-5 shrink-0 transition-all duration-300 ease-out animate-in fade-in slide-in-from-left-6 zoom-in-95">
+      {/* Header */}
+      <div className="flex items-center justify-between pb-3 mb-4 border-b border-gray-100">
+        <div className="flex items-center space-x-2">
+          <div className="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse" />
+          <h3 className="text-sm font-bold text-gray-900 tracking-tight">
+            Pilih Tanggal Transaksi
+          </h3>
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition active:scale-90"
+          title="Tutup Kalender"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
       {/* Month & Year Navigation Header */}
-      <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+      <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-50">
         <button
           type="button"
           onClick={handlePrevMonth}
-          className="p-2 rounded-xl text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-all active:scale-90"
+          className="p-1.5 rounded-xl text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-all active:scale-90"
           title="Bulan Sebelumnya"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -149,7 +115,7 @@ export function CustomDatePicker({
         <button
           type="button"
           onClick={handleNextMonth}
-          className="p-2 rounded-xl text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-all active:scale-90"
+          className="p-1.5 rounded-xl text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-all active:scale-90"
           title="Bulan Berikutnya"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -168,7 +134,7 @@ export function CustomDatePicker({
       </div>
 
       {/* Day Grid */}
-      <div className="grid grid-cols-7 gap-1.5 text-center">
+      <div className="grid grid-cols-7 gap-1 text-center">
         {Array.from({ length: firstDayOfWeek }).map((_, i) => (
           <span key={`empty-${i}`} />
         ))}
@@ -201,7 +167,7 @@ export function CustomDatePicker({
 
       {/* Today Button Footer */}
       <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
-        <span className="text-xs text-gray-400 font-medium">Klik tanggal untuk memilih</span>
+        <span className="text-xs text-gray-400 font-medium">Format: YYYY-MM-DD</span>
         <button
           type="button"
           onClick={handleSelectToday}
@@ -210,46 +176,6 @@ export function CustomDatePicker({
           Hari Ini
         </button>
       </div>
-    </div>
-  );
-
-  return (
-    <div ref={containerRef} className="relative w-full">
-      <input type="hidden" name={name} value={value} />
-
-      {/* Input Trigger Button */}
-      <button
-        type="button"
-        onClick={toggleCalendar}
-        className={`w-full flex items-center justify-between rounded-xl border px-4 py-3 text-sm font-medium transition-all duration-200 bg-white ${
-          isOpen
-            ? 'border-blue-500 ring-4 ring-blue-500/10 shadow-sm'
-            : error
-            ? 'border-red-300 focus:ring-red-500'
-            : 'border-gray-300 hover:border-gray-400 focus:ring-2 focus:ring-blue-500'
-        }`}
-      >
-        <span className="text-gray-900 font-medium">
-          {value ? formatDisplay(value) : 'Pilih Tanggal'}
-        </span>
-        <div className={`p-1 rounded-lg transition-transform duration-300 ${isOpen ? 'rotate-180 bg-blue-50 text-blue-600' : 'text-blue-600'}`}>
-          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-        </div>
-      </button>
-
-      {/* Standard Dropdown fallback if not side-panel mode */}
-      {!isSidePanelMode && isOpen && (
-        <div className="absolute z-50 mt-2 w-80 bg-white rounded-3xl shadow-2xl border border-gray-100 p-5 animate-in fade-in zoom-in-95 duration-200">
-          {CalendarContent}
-        </div>
-      )}
-
-      {/* Export CalendarContent helper if side-panel mode is handled by parent */}
-      {isSidePanelMode && isOpen && (
-        <div className="calendar-side-panel hidden">{/* Signal open to parent */}</div>
-      )}
     </div>
   );
 }

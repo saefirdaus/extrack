@@ -2,16 +2,27 @@
 
 import { ActionState, createTransactionAction, updateTransactionAction } from '@/src/actions/transactions';
 import { Transaction } from '@/src/db/schema/transactions';
-import { CustomDatePicker } from './custom-date-picker';
 import { useActionState, useState } from 'react';
 
 interface TransactionFormProps {
   initialData?: Transaction;
   onSuccess?: () => void;
   onCancel?: () => void;
+  isCalendarOpen?: boolean;
+  onToggleCalendar?: () => void;
+  transactionDate?: string;
+  onDateChange?: (date: string) => void;
 }
 
-export function TransactionForm({ initialData, onSuccess, onCancel }: TransactionFormProps) {
+export function TransactionForm({
+  initialData,
+  onSuccess,
+  onCancel,
+  isCalendarOpen = false,
+  onToggleCalendar,
+  transactionDate: externalDate,
+  onDateChange: externalDateChange,
+}: TransactionFormProps) {
   const isEditMode = Boolean(initialData);
   const todayStr = new Date().toISOString().split('T')[0];
 
@@ -19,12 +30,10 @@ export function TransactionForm({ initialData, onSuccess, onCancel }: Transactio
     (initialData?.type as 'income' | 'expense') || 'expense'
   );
 
-  // Raw digits string for database (e.g. "1900000")
   const [rawAmount, setRawAmount] = useState<string>(
     initialData ? initialData.amount.toString() : ''
   );
 
-  // Display text formatted with Rupiah (e.g. "Rp 1.900.000")
   const formatRupiahDisplay = (numStr: string) => {
     const digits = numStr.replace(/\D/g, '');
     if (!digits) return '';
@@ -43,9 +52,29 @@ export function TransactionForm({ initialData, onSuccess, onCancel }: Transactio
   };
 
   const [description, setDescription] = useState<string>(initialData?.description || '');
-  const [transactionDate, setTransactionDate] = useState<string>(
+  const [internalDate, setInternalDate] = useState<string>(
     initialData ? initialData.transactionDate : todayStr
   );
+
+  const currentDate = externalDate !== undefined ? externalDate : internalDate;
+  const setDate = externalDateChange || setInternalDate;
+
+  const formatDisplayDate = (str: string) => {
+    try {
+      const parts = str.split('-').map(Number);
+      if (parts.length === 3) {
+        const d = new Date(parts[0], parts[1] - 1, parts[2]);
+        return new Intl.DateTimeFormat('id-ID', {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric'
+        }).format(d);
+      }
+      return str;
+    } catch {
+      return str;
+    }
+  };
 
   const boundAction = isEditMode && initialData
     ? updateTransactionAction.bind(null, initialData.id)
@@ -65,11 +94,11 @@ export function TransactionForm({ initialData, onSuccess, onCancel }: Transactio
   return (
     <div className="w-full">
       {state?.errors?._form && (
-        <div className="p-3.5 mb-5 rounded-xl bg-red-50 text-red-700 text-sm border border-red-200 flex items-start gap-2">
+        <div className="p-3.5 mb-5 rounded-2xl bg-red-50 text-red-700 text-sm border border-red-200 flex items-start gap-2.5 animate-in fade-in">
           <svg className="w-5 h-5 text-red-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <span>{state.errors._form}</span>
+          <span className="font-medium">{state.errors._form}</span>
         </div>
       )}
 
@@ -83,10 +112,10 @@ export function TransactionForm({ initialData, onSuccess, onCancel }: Transactio
             <button
               type="button"
               onClick={() => setType('income')}
-              className={`flex items-center justify-center py-2.5 px-4 rounded-xl text-sm font-medium border transition ${
+              className={`flex items-center justify-center py-3 px-4 rounded-2xl text-sm font-medium border transition-all duration-200 transform active:scale-95 ${
                 type === 'income'
-                  ? 'bg-green-50 border-green-500 text-green-700 font-bold shadow-sm'
-                  : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                  ? 'bg-green-50/80 border-green-500 text-green-700 font-bold shadow-sm shadow-green-500/10'
+                  : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50/80'
               }`}
             >
               <input
@@ -97,16 +126,16 @@ export function TransactionForm({ initialData, onSuccess, onCancel }: Transactio
                 onChange={() => setType('income')}
                 className="sr-only"
               />
-              <span className="w-2.5 h-2.5 rounded-full bg-green-500 mr-2" />
+              <span className="w-2.5 h-2.5 rounded-full bg-green-500 mr-2 animate-pulse" />
               Pemasukan
             </button>
             <button
               type="button"
               onClick={() => setType('expense')}
-              className={`flex items-center justify-center py-2.5 px-4 rounded-xl text-sm font-medium border transition ${
+              className={`flex items-center justify-center py-3 px-4 rounded-2xl text-sm font-medium border transition-all duration-200 transform active:scale-95 ${
                 type === 'expense'
-                  ? 'bg-red-50 border-red-500 text-red-700 font-bold shadow-sm'
-                  : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                  ? 'bg-red-50/80 border-red-500 text-red-700 font-bold shadow-sm shadow-red-500/10'
+                  : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50/80'
               }`}
             >
               <input
@@ -117,7 +146,7 @@ export function TransactionForm({ initialData, onSuccess, onCancel }: Transactio
                 onChange={() => setType('expense')}
                 className="sr-only"
               />
-              <span className="w-2.5 h-2.5 rounded-full bg-red-500 mr-2" />
+              <span className="w-2.5 h-2.5 rounded-full bg-red-500 mr-2 animate-pulse" />
               Pengeluaran
             </button>
           </div>
@@ -139,10 +168,10 @@ export function TransactionForm({ initialData, onSuccess, onCancel }: Transactio
             value={displayAmount}
             onChange={handleAmountChange}
             placeholder="Rp 50.000"
-            className={`w-full rounded-xl border px-3.5 py-2.5 text-sm font-semibold text-gray-900 transition focus:outline-none focus:ring-2 bg-white ${
+            className={`w-full rounded-2xl border px-4 py-3 text-sm font-bold text-gray-900 transition-all duration-200 focus:outline-none focus:ring-4 bg-white ${
               state?.errors?.amount
-                ? 'border-red-300 focus:ring-red-500'
-                : 'border-gray-300 focus:ring-blue-500'
+                ? 'border-red-300 focus:ring-red-500/20'
+                : 'border-gray-200 hover:border-gray-300 focus:border-blue-500 focus:ring-blue-500/10'
             }`}
           />
           {state?.errors?.amount && (
@@ -164,10 +193,10 @@ export function TransactionForm({ initialData, onSuccess, onCancel }: Transactio
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Contoh: Beli Makan Siang / Uang Saku"
-            className={`w-full rounded-xl border px-3.5 py-2.5 text-sm text-gray-900 transition focus:outline-none focus:ring-2 bg-white ${
+            className={`w-full rounded-2xl border px-4 py-3 text-sm text-gray-900 font-medium transition-all duration-200 focus:outline-none focus:ring-4 bg-white ${
               state?.errors?.description
-                ? 'border-red-300 focus:ring-red-500'
-                : 'border-gray-300 focus:ring-blue-500'
+                ? 'border-red-300 focus:ring-red-500/20'
+                : 'border-gray-200 hover:border-gray-300 focus:border-blue-500 focus:ring-blue-500/10'
             }`}
           />
           {state?.errors?.description && (
@@ -175,17 +204,32 @@ export function TransactionForm({ initialData, onSuccess, onCancel }: Transactio
           )}
         </div>
 
-        {/* Custom Stylized Date Picker */}
+        {/* Tanggal Transaksi Trigger */}
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-1.5">
             Tanggal Transaksi <span className="text-red-500">*</span>
           </label>
-          <CustomDatePicker
-            value={transactionDate}
-            onChange={setTransactionDate}
-            name="transactionDate"
-            error={state?.errors?.transactionDate}
-          />
+          <input type="hidden" name="transactionDate" value={currentDate} />
+          <button
+            type="button"
+            onClick={onToggleCalendar}
+            className={`w-full flex items-center justify-between rounded-2xl border px-4 py-3 text-sm font-medium transition-all duration-200 bg-white ${
+              isCalendarOpen
+                ? 'border-blue-500 ring-4 ring-blue-500/10 shadow-sm'
+                : state?.errors?.transactionDate
+                ? 'border-red-300 focus:ring-red-500'
+                : 'border-gray-200 hover:border-gray-300 focus:ring-4 focus:ring-blue-500/10'
+            }`}
+          >
+            <span className="text-gray-900 font-semibold">
+              {currentDate ? formatDisplayDate(currentDate) : 'Pilih Tanggal'}
+            </span>
+            <div className={`p-1.5 rounded-xl transition-all duration-300 ${isCalendarOpen ? 'rotate-180 bg-blue-50 text-blue-600 shadow-xs' : 'text-blue-600 hover:bg-blue-50'}`}>
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+          </button>
           {state?.errors?.transactionDate && (
             <p className="mt-1 text-xs text-red-600 font-medium">{state.errors.transactionDate}</p>
           )}
@@ -197,7 +241,7 @@ export function TransactionForm({ initialData, onSuccess, onCancel }: Transactio
             <button
               type="button"
               onClick={onCancel}
-              className="px-4 py-2.5 rounded-xl text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition"
+              className="px-5 py-2.5 rounded-2xl text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-all duration-200 active:scale-95"
             >
               Batal
             </button>
@@ -205,7 +249,7 @@ export function TransactionForm({ initialData, onSuccess, onCancel }: Transactio
           <button
             type="submit"
             disabled={isPending}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2.5 rounded-xl text-sm transition shadow-sm disabled:opacity-50 flex items-center justify-center min-w-[140px]"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2.5 rounded-2xl text-sm transition-all duration-200 shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/30 disabled:opacity-50 flex items-center justify-center min-w-[150px] active:scale-95"
           >
             {isPending ? (
               <>
