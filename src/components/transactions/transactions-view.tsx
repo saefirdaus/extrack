@@ -80,51 +80,51 @@ export function TransactionsView({ items, status }: TransactionsViewProps) {
       {/* Financial Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         {/* Total Income Card */}
-        <div className="bg-zinc-900/90 border border-zinc-800/80 p-5 rounded-3xl shadow-xl backdrop-blur-xl flex items-center justify-between">
-          <div>
-            <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1">
+        <div className="bg-zinc-900/90 border border-zinc-800/80 p-5 rounded-3xl shadow-xl backdrop-blur-xl flex items-center justify-between gap-3 overflow-hidden">
+          <div className="min-w-0 flex-1 pr-1">
+            <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-wide truncate mb-1">
               Total Pemasukan
             </p>
-            <p className="text-xl font-bold text-emerald-400">
+            <p className="text-xl font-bold text-emerald-400 truncate">
               {formatCurrency(totalIncome)}
             </p>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="w-11 h-11 shrink-0 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11l5-5m0 0l5 5m-5-5v12" />
             </svg>
           </div>
         </div>
 
         {/* Total Expense Card */}
-        <div className="bg-zinc-900/90 border border-zinc-800/80 p-5 rounded-3xl shadow-xl backdrop-blur-xl flex items-center justify-between">
-          <div>
-            <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1">
+        <div className="bg-zinc-900/90 border border-zinc-800/80 p-5 rounded-3xl shadow-xl backdrop-blur-xl flex items-center justify-between gap-3 overflow-hidden">
+          <div className="min-w-0 flex-1 pr-1">
+            <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-wide truncate mb-1">
               Total Pengeluaran
             </p>
-            <p className="text-xl font-bold text-rose-400">
+            <p className="text-xl font-bold text-rose-400 truncate">
               {formatCurrency(totalExpense)}
             </p>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="w-11 h-11 shrink-0 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 13l-5 5m0 0l-5-5m5 5V6" />
             </svg>
           </div>
         </div>
 
         {/* Net Balance Card */}
-        <div className="bg-zinc-900/90 border border-zinc-800/80 p-5 rounded-3xl shadow-xl backdrop-blur-xl flex items-center justify-between">
-          <div>
-            <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1">
+        <div className="bg-zinc-900/90 border border-zinc-800/80 p-5 rounded-3xl shadow-xl backdrop-blur-xl flex items-center justify-between gap-3 overflow-hidden">
+          <div className="min-w-0 flex-1 pr-1">
+            <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-wide truncate mb-1">
               Saldo Arus Kas
             </p>
-            <p className={`text-xl font-bold ${netBalance >= 0 ? 'text-blue-400' : 'text-rose-400'}`}>
+            <p className={`text-xl font-bold truncate ${netBalance >= 0 ? 'text-blue-400' : 'text-rose-400'}`}>
               {formatCurrency(netBalance)}
             </p>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="w-11 h-11 shrink-0 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
             </svg>
           </div>
