@@ -1,3 +1,4 @@
+
 import {
   pgTable,
   serial,
@@ -17,6 +18,7 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
+
 });
 
 export type User = typeof users.$inferSelect;
