@@ -1,8 +1,8 @@
 'use server';
 
-import { db } from '@/src/db';
-import { transactions } from '@/src/db/schema/transactions';
-import { getCurrentUserId } from '@/src/lib/auth';
+import { db } from '@/db';
+import { transactions } from '@/db/schema/transactions';
+import { getCurrentUserId } from '@/lib/auth';
 import { and, eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
@@ -18,42 +18,16 @@ export interface ActionState {
   };
 }
 
+import { parseAndValidateTransaction } from '@/lib/validation/transaction';
+
 export async function createTransactionAction(
   prevState: ActionState,
   formData: FormData
 ): Promise<ActionState> {
-  const rawType = formData.get('type')?.toString() || '';
-  const rawAmount = formData.get('amount')?.toString() || '';
-  const rawDescription = formData.get('description')?.toString() || '';
-  const rawTransactionDate = formData.get('transactionDate')?.toString() || '';
+  void prevState;
 
-  const errors: ActionState['errors'] = {};
-
-  // Validasi type
-  if (!rawType || !['income', 'expense'].includes(rawType)) {
-    errors.type = 'Jenis transaksi wajib dipilih (Pemasukan atau Pengeluaran)';
-  }
-
-  // Validasi amount
-  const parsedAmount = parseInt(rawAmount, 10);
-  if (isNaN(parsedAmount) || parsedAmount <= 0) {
-    errors.amount = 'Nominal harus berupa angka lebih besar dari 0';
-  }
-
-  // Validasi description
-  const trimmedDescription = rawDescription.trim();
-  if (!trimmedDescription || trimmedDescription.length < 3) {
-    errors.description = 'Deskripsi minimal 3 karakter';
-  } else if (trimmedDescription.length > 255) {
-    errors.description = 'Deskripsi maksimal 255 karakter';
-  }
-
-  // Validasi transactionDate
-  if (!rawTransactionDate || isNaN(Date.parse(rawTransactionDate))) {
-    errors.transactionDate = 'Tanggal transaksi tidak valid';
-  }
-
-  if (Object.keys(errors).length > 0) {
+  const { data, errors } = parseAndValidateTransaction(formData);
+  if (errors || !data) {
     return { success: false, errors };
   }
 
@@ -62,10 +36,7 @@ export async function createTransactionAction(
   try {
     await db.insert(transactions).values({
       userId: currentUserId,
-      type: rawType as 'income' | 'expense',
-      amount: parsedAmount,
-      description: trimmedDescription,
-      transactionDate: rawTransactionDate,
+      ...data,
     });
   } catch (error) {
     console.error('Error creating transaction:', error);
@@ -83,34 +54,10 @@ export async function updateTransactionAction(
   prevState: ActionState,
   formData: FormData
 ): Promise<ActionState> {
-  const rawType = formData.get('type')?.toString() || '';
-  const rawAmount = formData.get('amount')?.toString() || '';
-  const rawDescription = formData.get('description')?.toString() || '';
-  const rawTransactionDate = formData.get('transactionDate')?.toString() || '';
+  void prevState;
 
-  const errors: ActionState['errors'] = {};
-
-  if (!rawType || !['income', 'expense'].includes(rawType)) {
-    errors.type = 'Jenis transaksi wajib dipilih (Pemasukan atau Pengeluaran)';
-  }
-
-  const parsedAmount = parseInt(rawAmount, 10);
-  if (isNaN(parsedAmount) || parsedAmount <= 0) {
-    errors.amount = 'Nominal harus berupa angka lebih besar dari 0';
-  }
-
-  const trimmedDescription = rawDescription.trim();
-  if (!trimmedDescription || trimmedDescription.length < 3) {
-    errors.description = 'Deskripsi minimal 3 karakter';
-  } else if (trimmedDescription.length > 255) {
-    errors.description = 'Deskripsi maksimal 255 karakter';
-  }
-
-  if (!rawTransactionDate || isNaN(Date.parse(rawTransactionDate))) {
-    errors.transactionDate = 'Tanggal transaksi tidak valid';
-  }
-
-  if (Object.keys(errors).length > 0) {
+  const { data, errors } = parseAndValidateTransaction(formData);
+  if (errors || !data) {
     return { success: false, errors };
   }
 
@@ -120,10 +67,7 @@ export async function updateTransactionAction(
     const result = await db
       .update(transactions)
       .set({
-        type: rawType as 'income' | 'expense',
-        amount: parsedAmount,
-        description: trimmedDescription,
-        transactionDate: rawTransactionDate,
+        ...data,
         updatedAt: new Date(),
       })
       .where(and(eq(transactions.id, id), eq(transactions.userId, currentUserId)))
