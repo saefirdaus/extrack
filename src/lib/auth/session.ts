@@ -4,22 +4,24 @@ import {
   signToken,
   verifyToken,
   type SessionPayload,
-} from "@/src/lib/auth/jwt";
+} from "@/lib/auth/jwt";
 
 const sessionCookieOptions = {
   httpOnly: true,
   sameSite: "lax" as const,
   path: "/",
   secure: process.env.NODE_ENV === "production",
+  maxAge: 24 * 60 * 60,
 };
 
 export async function createSession(payload: SessionPayload): Promise<void> {
   const cookieStore = await cookies();
+  const token = await signToken(payload);
 
   cookieStore.set({
     ...sessionCookieOptions,
     name: AUTH_COOKIE_NAME,
-    value: signToken(payload),
+    value: token,
   });
 }
 
@@ -34,30 +36,26 @@ export interface SessionUser {
   email: string;
 }
 
-export const MOCK_USER: SessionUser = {
-  id: 1,
-  name: "John Doe",
-  email: "john@kampus.ac.id",
-};
-
 /**
- * Mendapatkan identitas user terotentikasi.
- * Mengembalikan user dari token session (jika ada) atau mock user untuk pengujian development.
+ * Mendapatkan user terotentikasi dari cookie session JWT.
+ * Mengembalikan SessionUser jika token valid, atau null jika tidak ada sesi.
  */
-export async function getCurrentUser(): Promise<SessionUser> {
+export async function getCurrentUser(): Promise<SessionUser | null> {
   const cookieStore = await cookies();
   const authToken = cookieStore.get(AUTH_COOKIE_NAME)?.value;
 
-  if (authToken) {
-    const verified = verifyToken(authToken);
-    if (verified) {
-      return {
-        id: verified.userId,
-        name: verified.name,
-        email: verified.email,
-      };
-    }
+  if (!authToken) {
+    return null;
   }
 
-  return MOCK_USER;
+  const verified = await verifyToken(authToken);
+  if (!verified) {
+    return null;
+  }
+
+  return {
+    id: verified.userId,
+    name: verified.name,
+    email: verified.email,
+  };
 }

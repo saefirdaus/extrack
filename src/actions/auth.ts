@@ -2,11 +2,11 @@
 
 import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/node-postgres";
 import { redirect } from "next/navigation";
 
-import { users } from "@/src/db/schema/users";
-import { clearSession, createSession } from "@/src/lib/auth/session";
+import { db } from "@/db";
+import { users } from "@/db/schema/users";
+import { clearSession, createSession } from "@/lib/auth/session";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PASSWORD_MIN_LENGTH = 6;
@@ -19,7 +19,6 @@ const DUPLICATE_EMAIL_MESSAGE =
   "Email ini sudah terdaftar. Silakan gunakan email lain.";
 
 type AuthField = "name" | "email" | "password";
-
 type AuthFieldErrors = Partial<Record<AuthField, string[]>>;
 
 type AuthFormValues = {
@@ -38,21 +37,10 @@ function getFormString(value: FormDataEntryValue | null): string {
   return typeof value === "string" ? value : "";
 }
 
-function getDatabase() {
-  const databaseUrl = process.env.DATABASE_URL;
-
-  if (!databaseUrl) {
-    throw new Error("DATABASE_URL is not configured");
-  }
-
-  return drizzle({ connection: databaseUrl });
-}
-
 function isUniqueViolation(error: unknown): boolean {
   if (typeof error !== "object" || error === null || !("code" in error)) {
     return false;
   }
-
   return error.code === "23505";
 }
 
@@ -126,7 +114,6 @@ export async function registerAction(
   }
 
   try {
-    const db = getDatabase();
     const existingUsers = await db
       .select({ id: users.id })
       .from(users)
@@ -166,7 +153,6 @@ export async function registerAction(
     }
 
     console.error("Register action failed:", error);
-
     return {
       success: false,
       message: REGISTER_ERROR_MESSAGE,
@@ -193,7 +179,6 @@ export async function loginAction(
   }
 
   try {
-    const db = getDatabase();
     const [user] = await db
       .select()
       .from(users)
@@ -215,7 +200,6 @@ export async function loginAction(
     });
   } catch (error) {
     console.error("Login action failed:", error);
-
     return {
       success: false,
       message: SERVER_ERROR_MESSAGE,
