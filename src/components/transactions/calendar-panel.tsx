@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { parseDate, formatISODate } from '@/lib/format';
 
 interface CalendarPanelProps {
   value: string;
@@ -16,31 +17,9 @@ const MONTH_NAMES = [
 const DAY_NAMES = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
 
 export function CalendarPanel({ value, onChange, onClose }: CalendarPanelProps) {
-  const parseDate = (str: string) => {
-    if (!str) return new Date();
-    const parts = str.split('-').map(Number);
-    if (parts.length === 3 && !isNaN(parts[0]) && !isNaN(parts[1]) && !isNaN(parts[2])) {
-      return new Date(parts[0], parts[1] - 1, parts[2]);
-    }
-    return new Date();
-  };
-
-  const selectedDate = parseDate(value);
-  const [currentYear, setCurrentYear] = useState(selectedDate.getFullYear());
-  const [currentMonth, setCurrentMonth] = useState(selectedDate.getMonth());
-
-  useEffect(() => {
-    const d = parseDate(value);
-    setCurrentYear(d.getFullYear());
-    setCurrentMonth(d.getMonth());
-  }, [value]);
-
-  const formatISO = (d: Date) => {
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
+  const initialDate = parseDate(value);
+  const [currentYear, setCurrentYear] = useState(() => initialDate.getFullYear());
+  const [currentMonth, setCurrentMonth] = useState(() => initialDate.getMonth());
 
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay();
@@ -65,72 +44,55 @@ export function CalendarPanel({ value, onChange, onClose }: CalendarPanelProps) 
 
   const handleSelectDay = (day: number) => {
     const newDate = new Date(currentYear, currentMonth, day);
-    onChange(formatISO(newDate));
+    onChange(formatISODate(newDate));
   };
 
   const handleSelectToday = () => {
     const today = new Date();
-    onChange(formatISO(today));
+    onChange(formatISODate(today));
     setCurrentYear(today.getFullYear());
     setCurrentMonth(today.getMonth());
   };
 
   return (
-    <div className="w-80 bg-zinc-900 rounded-3xl shadow-2xl border border-zinc-800 p-5 shrink-0 transition-all duration-300 ease-out animate-in fade-in slide-in-from-left-6 zoom-in-95 backdrop-blur-xl">
-      {/* Header */}
-      <div className="flex items-center justify-between pb-3 mb-4 border-b border-zinc-800">
-        <h3 className="text-sm font-bold text-zinc-100 tracking-tight">
-          Pilih Tanggal Transaksi
-        </h3>
-        <button
-          type="button"
-          onClick={onClose}
-          className="p-1.5 rounded-xl text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition active:scale-90"
-          title="Tutup Kalender"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-
-      {/* Month & Year Navigation Header */}
-      <div className="flex items-center justify-between mb-4 pb-2 border-b border-zinc-800/60">
+    <div className="w-72 bg-white dark:bg-zinc-900 rounded-xl shadow-xl border border-zinc-200 dark:border-zinc-800 p-4 shrink-0 transition-colors animate-in fade-in">
+      {/* Month & Year Navigation */}
+      <div className="flex items-center justify-between mb-3 pb-2 border-b border-zinc-100 dark:border-zinc-800">
         <button
           type="button"
           onClick={handlePrevMonth}
-          className="p-1.5 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-all active:scale-90"
+          className="p-1 rounded text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
           title="Bulan Sebelumnya"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <span className="text-sm font-bold text-zinc-100 tracking-tight">
+        <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">
           {MONTH_NAMES[currentMonth]} {currentYear}
         </span>
         <button
           type="button"
           onClick={handleNextMonth}
-          className="p-1.5 rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-all active:scale-90"
+          className="p-1 rounded text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
           title="Bulan Berikutnya"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </button>
       </div>
 
-      {/* Days of Week Header */}
-      <div className="grid grid-cols-7 gap-1 text-center mb-2">
+      {/* Days of Week */}
+      <div className="grid grid-cols-7 gap-1 text-center mb-1">
         {DAY_NAMES.map((d, i) => (
-          <span key={i} className="text-xs font-bold text-zinc-500 py-1">
+          <span key={i} className="text-[10px] font-mono font-medium text-zinc-400 dark:text-zinc-500 py-0.5">
             {d}
           </span>
         ))}
       </div>
 
-      {/* Day Grid */}
+      {/* Days Grid */}
       <div className="grid grid-cols-7 gap-1 text-center">
         {Array.from({ length: firstDayOfWeek }).map((_, i) => (
           <span key={`empty-${i}`} />
@@ -139,21 +101,21 @@ export function CalendarPanel({ value, onChange, onClose }: CalendarPanelProps) 
         {Array.from({ length: daysInMonth }).map((_, i) => {
           const day = i + 1;
           const dateObj = new Date(currentYear, currentMonth, day);
-          const dateStr = formatISO(dateObj);
+          const dateStr = formatISODate(dateObj);
           const isSelected = dateStr === value;
-          const isToday = formatISO(new Date()) === dateStr;
+          const isToday = formatISODate(new Date()) === dateStr;
 
           return (
             <button
               key={day}
               type="button"
               onClick={() => handleSelectDay(day)}
-              className={`h-9 w-9 mx-auto flex items-center justify-center rounded-xl text-xs font-semibold transition-all transform active:scale-90 ${
+              className={`h-7 w-7 mx-auto flex items-center justify-center rounded text-xs font-mono tabular-nums transition-colors cursor-pointer ${
                 isSelected
-                  ? 'bg-blue-600 text-white font-bold scale-105'
+                  ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 font-bold'
                   : isToday
-                  ? 'bg-blue-500/10 text-blue-400 font-bold border border-blue-500/30 hover:bg-blue-500/20 hover:scale-105'
-                  : 'text-zinc-300 hover:bg-zinc-800 hover:scale-105'
+                  ? 'border border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100'
+                  : 'text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800'
               }`}
             >
               {day}
@@ -162,15 +124,21 @@ export function CalendarPanel({ value, onChange, onClose }: CalendarPanelProps) 
         })}
       </div>
 
-      {/* Today Button Footer */}
-      <div className="mt-4 pt-3 border-t border-zinc-800 flex items-center justify-between">
-        <span className="text-xs text-zinc-500 font-medium">Format: YYYY-MM-DD</span>
+      {/* Footer */}
+      <div className="mt-3 pt-2.5 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
         <button
           type="button"
           onClick={handleSelectToday}
-          className="text-xs font-bold text-blue-400 hover:text-blue-300 transition py-1 px-3.5 rounded-xl bg-blue-500/10 border border-blue-500/20 hover:bg-blue-500/20 active:scale-95"
+          className="text-[11px] font-mono font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white transition-colors cursor-pointer"
         >
           Hari Ini
+        </button>
+        <button
+          type="button"
+          onClick={onClose}
+          className="text-[11px] font-mono text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors cursor-pointer"
+        >
+          Tutup
         </button>
       </div>
     </div>

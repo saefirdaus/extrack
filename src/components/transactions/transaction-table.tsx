@@ -1,7 +1,8 @@
 'use client';
 
-import { Transaction } from '@/src/db/schema/transactions';
+import { Transaction } from '@/db/schema/transactions';
 import Link from 'next/link';
+import { formatDisplayDate, formatRupiah } from '@/lib/format';
 import { DeleteButton } from './delete-button';
 
 interface TransactionTableProps {
@@ -13,122 +14,88 @@ interface TransactionTableProps {
 export function TransactionTable({ items, onAddClick, onEditClick }: TransactionTableProps) {
   if (items.length === 0) {
     return (
-      <div className="text-center py-16 px-6 bg-zinc-900/90 rounded-3xl shadow-2xl border border-zinc-800/80 max-w-xl mx-auto backdrop-blur-xl">
-        <div className="w-16 h-16 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-2xl flex items-center justify-center mx-auto mb-4">
-          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 14l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </div>
-        <p className="text-zinc-100 font-bold text-lg mb-1">
+      <div className="text-center py-12 px-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 shadow-xs">
+        <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-3">
           Belum ada catatan transaksi.
-        </p>
-        <p className="text-zinc-400 text-sm mb-6">
-          Mulai kelola keuangan Anda dengan mencatat transaksi pertama.
         </p>
         {onAddClick ? (
           <button
             type="button"
             onClick={onAddClick}
-            className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-3 rounded-2xl text-sm transition-all duration-200 active:scale-95"
+            className="inline-flex items-center gap-1 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 font-semibold px-3 py-1.5 rounded-md text-xs hover:opacity-90 transition-opacity cursor-pointer shadow-xs"
           >
-            + Catat Transaksi Sekarang
+            + Catat Transaksi
           </button>
         ) : (
           <Link
             href="/dashboard/transactions/new"
-            className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-3 rounded-2xl text-sm transition-all duration-200 active:scale-95"
+            className="inline-flex items-center gap-1 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 font-semibold px-3 py-1.5 rounded-md text-xs hover:opacity-90 transition-opacity cursor-pointer shadow-xs"
           >
-            + Catat Transaksi Sekarang
+            + Catat Transaksi
           </Link>
         )}
       </div>
     );
   }
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
-
-  const formatDate = (dateStr: string) => {
-    try {
-      const parts = dateStr.split('-').map(Number);
-      if (parts.length === 3) {
-        const date = new Date(parts[0], parts[1] - 1, parts[2]);
-        return new Intl.DateTimeFormat('id-ID', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-        }).format(date);
-      }
-      return dateStr;
-    } catch {
-      return dateStr;
-    }
-  };
-
   return (
-    <div className="bg-zinc-900/90 rounded-3xl shadow-2xl border border-zinc-800/80 overflow-hidden backdrop-blur-xl">
+    <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 overflow-hidden shadow-xs">
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm text-zinc-300 border-collapse">
+        <table className="w-full text-left text-xs">
           <thead>
-            <tr className="bg-zinc-950/60 text-zinc-400 font-bold border-b border-zinc-800/80 uppercase tracking-wider text-xs">
-              <th className="px-6 py-4">Tanggal</th>
-              <th className="px-6 py-4">Keterangan</th>
-              <th className="px-6 py-4">Jenis</th>
-              <th className="px-6 py-4">Nominal</th>
-              <th className="px-6 py-4 text-right">Aksi</th>
+            <tr className="border-b border-zinc-200 dark:border-zinc-800/80 bg-zinc-50/70 dark:bg-zinc-950/40 text-zinc-500 dark:text-zinc-400 font-mono text-[11px] uppercase tracking-wider">
+              <th className="px-5 py-3">Tanggal</th>
+              <th className="px-5 py-3">Keterangan</th>
+              <th className="px-5 py-3">Jenis</th>
+              <th className="px-5 py-3 text-right">Nominal</th>
+              <th className="px-5 py-3 text-right">Aksi</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-zinc-800/50">
+          <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60 font-sans">
             {items.map((item) => {
               const isIncome = item.type === 'income';
               return (
                 <tr
                   key={item.id}
-                  className="hover:bg-zinc-800/40 transition-colors duration-150 border-b border-zinc-800/50"
+                  className="hover:bg-zinc-50/80 dark:hover:bg-zinc-800/30 transition-colors"
                 >
-                  <td className="px-6 py-4 font-semibold text-zinc-200 whitespace-nowrap">
-                    {formatDate(item.transactionDate)}
+                  <td className="px-5 py-3.5 whitespace-nowrap text-zinc-500 dark:text-zinc-400 font-mono">
+                    {formatDisplayDate(item.transactionDate)}
                   </td>
-                  <td className="px-6 py-4 text-zinc-300 max-w-xs truncate font-medium">
+                  <td className="px-5 py-3.5 text-zinc-900 dark:text-zinc-100 max-w-xs truncate font-medium">
                     {item.description}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {isIncome ? (
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                        Pemasukan
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20">
-                        Pengeluaran
-                      </span>
-                    )}
+                  <td className="px-5 py-3.5 whitespace-nowrap">
+                    <span
+                      className={`inline-block px-2 py-0.5 rounded text-[11px] font-mono border ${
+                        isIncome
+                          ? 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-400'
+                          : 'border-zinc-200 bg-zinc-50 text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400'
+                      }`}
+                    >
+                      {isIncome ? 'Pemasukan' : 'Pengeluaran'}
+                    </span>
                   </td>
                   <td
-                    className={`px-6 py-4 font-bold whitespace-nowrap ${
-                      isIncome ? 'text-emerald-400' : 'text-rose-400'
+                    className={`px-5 py-3.5 whitespace-nowrap text-right font-mono font-semibold tabular-nums ${
+                      isIncome ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
                     }`}
                   >
-                    {isIncome ? `+ ${formatCurrency(item.amount)}` : `- ${formatCurrency(item.amount)}`}
+                    {isIncome ? `+ ${formatRupiah(item.amount)}` : `- ${formatRupiah(item.amount)}`}
                   </td>
-                  <td className="px-6 py-4 text-right whitespace-nowrap">
+                  <td className="px-5 py-3.5 text-right whitespace-nowrap font-mono">
                     {onEditClick ? (
                       <button
                         type="button"
                         onClick={() => onEditClick(item)}
-                        className="text-blue-400 hover:text-blue-300 font-semibold text-xs cursor-pointer transition-colors duration-150"
+                        className="text-xs text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 cursor-pointer mr-3 transition-colors"
                       >
                         Edit
                       </button>
                     ) : (
                       <Link
                         href={`/dashboard/transactions/${item.id}/edit`}
-                        className="text-blue-400 hover:text-blue-300 font-semibold text-xs transition-colors duration-150"
+                        className="text-xs text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 mr-3 transition-colors"
                       >
                         Edit
                       </Link>

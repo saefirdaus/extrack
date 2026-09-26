@@ -1,7 +1,8 @@
 'use client';
 
-import { Transaction } from '@/src/db/schema/transactions';
+import { Transaction } from '@/db/schema/transactions';
 import { useState } from 'react';
+import { formatRupiah } from '@/lib/format';
 import { TransactionModal } from './transaction-modal';
 import { TransactionTable } from './transaction-table';
 
@@ -39,117 +40,72 @@ export function TransactionsView({ items, status }: TransactionsViewProps) {
 
   const netBalance = totalIncome - totalExpense;
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
-
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex flex-col justify-center max-w-5xl mx-auto px-4 py-8">
-      {/* Header section */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4 bg-zinc-900/90 p-6 rounded-3xl border border-zinc-800/80 shadow-2xl backdrop-blur-xl">
+    <div className="space-y-6">
+      {/* Top Ledger Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-zinc-200 dark:border-zinc-800">
         <div>
-          <div className="mb-1">
-            <span className="text-xs font-bold text-blue-400 uppercase tracking-widest">
-              Financial Dashboard
-            </span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-zinc-100 tracking-tight">
-            Manajemen Transaksi
+          <h1 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">
+            Riwayat Transaksi
           </h1>
-          <p className="text-sm text-zinc-400 mt-1">
-            Pantau arus kas pemasukan dan pengeluaran secara real-time.
-          </p>
         </div>
-        <button
-          type="button"
-          onClick={handleOpenAdd}
-          className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-3 rounded-2xl text-sm transition-all duration-200 active:scale-95 cursor-pointer"
-        >
-          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
-          </svg>
-          Catat Transaksi Baru
-        </button>
+        <div>
+          <button
+            type="button"
+            onClick={handleOpenAdd}
+            className="inline-flex items-center gap-1.5 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 font-semibold px-3 py-1.5 rounded-md text-xs hover:opacity-90 transition-opacity cursor-pointer shadow-xs"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            <span>Catat Transaksi</span>
+          </button>
+        </div>
       </div>
 
-      {/* Financial Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        {/* Total Income Card */}
-        <div className="bg-zinc-900/90 border border-zinc-800/80 p-5 rounded-3xl shadow-xl backdrop-blur-xl flex items-center justify-between gap-3 overflow-hidden">
-          <div className="min-w-0 flex-1 pr-1">
-            <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-wide truncate mb-1">
-              Total Pemasukan
-            </p>
-            <p className="text-xl font-bold text-emerald-400 truncate">
-              {formatCurrency(totalIncome)}
-            </p>
-          </div>
-          <div className="w-11 h-11 shrink-0 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11l5-5m0 0l5 5m-5-5v12" />
-            </svg>
-          </div>
-        </div>
-
-        {/* Total Expense Card */}
-        <div className="bg-zinc-900/90 border border-zinc-800/80 p-5 rounded-3xl shadow-xl backdrop-blur-xl flex items-center justify-between gap-3 overflow-hidden">
-          <div className="min-w-0 flex-1 pr-1">
-            <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-wide truncate mb-1">
-              Total Pengeluaran
-            </p>
-            <p className="text-xl font-bold text-rose-400 truncate">
-              {formatCurrency(totalExpense)}
+      {/* Financial Summary Strip */}
+      <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 overflow-hidden shadow-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-zinc-200 dark:divide-zinc-800">
+          <div className="p-4">
+            <span className="text-xs font-mono uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block mb-1">
+              Pemasukan
+            </span>
+            <p className="text-lg font-mono font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
+              + {formatRupiah(totalIncome)}
             </p>
           </div>
-          <div className="w-11 h-11 shrink-0 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 13l-5 5m0 0l-5-5m5 5V6" />
-            </svg>
-          </div>
-        </div>
-
-        {/* Net Balance Card */}
-        <div className="bg-zinc-900/90 border border-zinc-800/80 p-5 rounded-3xl shadow-xl backdrop-blur-xl flex items-center justify-between gap-3 overflow-hidden">
-          <div className="min-w-0 flex-1 pr-1">
-            <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-wide truncate mb-1">
-              Saldo Arus Kas
-            </p>
-            <p className={`text-xl font-bold truncate ${netBalance >= 0 ? 'text-blue-400' : 'text-rose-400'}`}>
-              {formatCurrency(netBalance)}
+          <div className="p-4">
+            <span className="text-xs font-mono uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block mb-1">
+              Pengeluaran
+            </span>
+            <p className="text-lg font-mono font-bold text-rose-600 dark:text-rose-400 tabular-nums">
+              - {formatRupiah(totalExpense)}
             </p>
           </div>
-          <div className="w-11 h-11 shrink-0 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-            </svg>
+          <div className="p-4">
+            <span className="text-xs font-mono uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block mb-1">
+              Saldo
+            </span>
+            <p
+              className={`text-lg font-mono font-bold tabular-nums ${
+                netBalance >= 0 ? 'text-zinc-900 dark:text-zinc-100' : 'text-rose-600 dark:text-rose-400'
+              }`}
+            >
+              {formatRupiah(netBalance)}
+            </p>
           </div>
         </div>
       </div>
 
       {/* Flash Status Messages */}
       {status === 'created' && (
-        <div className="p-4 mb-6 rounded-2xl bg-emerald-500/10 text-emerald-300 text-sm font-medium border border-emerald-500/30 flex items-center justify-between animate-in fade-in">
-          <div className="flex items-center gap-2">
-            <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <span>Transaksi baru berhasil disimpan ke database!</span>
-          </div>
+        <div className="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 text-xs font-mono border border-emerald-200 dark:border-emerald-900/60 flex items-center gap-2">
+          <span>✓ Transaksi berhasil ditambahkan.</span>
         </div>
       )}
       {status === 'updated' && (
-        <div className="p-4 mb-6 rounded-2xl bg-blue-500/10 text-blue-300 text-sm font-medium border border-blue-500/30 flex items-center justify-between animate-in fade-in">
-          <div className="flex items-center gap-2">
-            <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <span>Perubahan transaksi berhasil diperbarui!</span>
-          </div>
+        <div className="p-3 rounded-lg bg-zinc-100 dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 text-xs font-mono border border-zinc-200 dark:border-zinc-800 flex items-center gap-2">
+          <span>✓ Transaksi berhasil diperbarui.</span>
         </div>
       )}
 
@@ -160,7 +116,7 @@ export function TransactionsView({ items, status }: TransactionsViewProps) {
         onEditClick={handleOpenEdit}
       />
 
-      {/* Interactive Modal Popup Window */}
+      {/* Interactive Modal Sheet */}
       <TransactionModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}

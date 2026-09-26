@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
-import { getThemePreference } from '@/src/lib/cookies/preference';
+import { getThemePreference } from '@/lib/cookies/preference';
 import './globals.css';
 
 const geistSans = Geist({
@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'ExTrack - Expense Tracker',
-  description: 'Aplikasi Manajemen Transaksi Keuangan Mahasiswa',
+  title: 'ExTrack — Financial Terminal',
+  description: 'Precision expense tracker and cashflow ledger',
 };
 
 export default async function RootLayout({
@@ -30,7 +30,7 @@ export default async function RootLayout({
       lang="id"
       className={`${theme === 'light' ? '' : 'dark '} ${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-zinc-950 text-zinc-100 font-sans selection:bg-blue-500/30 selection:text-blue-200">
+      <body className="min-h-full flex flex-col bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100 font-sans selection:bg-zinc-900 selection:text-white dark:selection:bg-zinc-100 dark:selection:text-zinc-900 transition-colors">
         {children}
       </body>
     </html>

@@ -1,7 +1,7 @@
-import { db } from '@/src/db';
-import { transactions } from '@/src/db/schema/transactions';
-import { getCurrentUserId } from '@/src/lib/auth';
-import { TransactionsView } from '@/src/components/transactions/transactions-view';
+import { db } from '@/db';
+import { transactions } from '@/db/schema/transactions';
+import { getCurrentUserId } from '@/lib/auth';
+import { TransactionsView } from '@/components/transactions/transactions-view';
 import { desc, eq } from 'drizzle-orm';
 
 interface PageProps {

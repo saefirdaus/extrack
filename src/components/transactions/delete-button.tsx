@@ -1,6 +1,4 @@
-'use client';
-
-import { deleteTransactionAction } from '@/src/actions/transactions';
+import { deleteTransactionAction } from '@/actions/transactions';
 import { useTransition } from 'react';
 
 interface DeleteButtonProps {
@@ -12,7 +10,7 @@ export function DeleteButton({ id }: DeleteButtonProps) {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const confirmed = window.confirm('Apakah Anda yakin ingin menghapus transaksi ini?');
+    const confirmed = window.confirm('Hapus transaksi ini?');
     if (confirmed) {
       const formData = new FormData();
       formData.append('id', id.toString());
@@ -27,7 +25,7 @@ export function DeleteButton({ id }: DeleteButtonProps) {
       <button
         type="submit"
         disabled={isPending}
-        className="text-rose-400 hover:text-rose-300 font-semibold text-xs ml-3 disabled:opacity-50 cursor-pointer transition-colors duration-150"
+        className="text-xs font-mono text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 disabled:opacity-40 cursor-pointer transition-colors"
       >
         {isPending ? 'Menghapus...' : 'Hapus'}
       </button>

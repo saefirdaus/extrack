@@ -1,7 +1,8 @@
-import { db } from '@/src/db';
-import { transactions } from '@/src/db/schema/transactions';
-import { getCurrentUserId } from '@/src/lib/auth';
-import { TransactionForm } from '@/src/components/transactions/transaction-form';
+import Link from 'next/link';
+import { db } from '@/db';
+import { transactions } from '@/db/schema/transactions';
+import { getCurrentUserId } from '@/lib/auth';
+import { TransactionForm } from '@/components/transactions/transaction-form';
 import { and, eq } from 'drizzle-orm';
 import { notFound } from 'next/navigation';
 
@@ -35,11 +36,24 @@ export default async function EditTransactionPage({ params }: PageProps) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-      <div className="bg-white w-full max-w-md rounded-2xl shadow-xl border border-gray-100 p-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-5 pb-3 border-b border-gray-100">
-          Edit Transaksi
-        </h2>
+    <div className="max-w-md mx-auto py-4">
+      <Link
+        href="/dashboard/transactions"
+        className="inline-flex items-center gap-1.5 text-xs font-mono text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 mb-4 transition-colors"
+      >
+        ← Kembali
+      </Link>
+
+      <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-xs border border-zinc-200 dark:border-zinc-800 p-5 transition-colors">
+        <div className="mb-4 pb-3 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+          <h1 className="text-sm font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+            Edit Transaksi
+          </h1>
+          <span className="text-xs font-mono text-zinc-400">
+            #{item.id}
+          </span>
+        </div>
+
         <TransactionForm initialData={item} />
       </div>
     </div>
