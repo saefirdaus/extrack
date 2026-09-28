@@ -3,7 +3,8 @@ import assert from 'node:assert';
 import { db } from '@/db';
 import { budgets } from '@/db/schema/budgets';
 import { users } from '@/db/schema/users';
-import { eq, and } from 'drizzle-orm';
+import { transactions } from '@/db/schema/transactions';
+import { eq, and, gte, lte } from 'drizzle-orm';
 import { getMonthlyBudgetSummary } from '@/actions/budget';
 import {
   parseMonthYearParams,
@@ -55,7 +56,26 @@ describe('Fitur Anggaran Bulanan (Monthly Budget)', () => {
       });
     }
 
-    // Bersihkan budget untuk bulan 9 tahun 2026
+    // Bersihkan transaksi & budget untuk bulan 9 tahun 2026
+    await db
+      .delete(transactions)
+      .where(
+        and(
+          eq(transactions.userId, 1),
+          gte(transactions.transactionDate, '2026-09-01'),
+          lte(transactions.transactionDate, '2026-09-30')
+        )
+      );
+
+    await db.insert(transactions).values({
+      userId: 1,
+      type: 'expense',
+      amount: 310000,
+      category: 'Kebutuhan',
+      description: 'Pengeluaran Uji Coba',
+      transactionDate: '2026-09-15',
+    });
+
     await db
       .delete(budgets)
       .where(and(eq(budgets.userId, 1), eq(budgets.month, 9), eq(budgets.year, 2026)));
