@@ -348,3 +348,14 @@ where(and(eq(budgets.userId, userId), eq(budgets.month, month), eq(budgets.year,
 - Tidak diperlukan date range picker bebas multi-hari.
 - Tidak diperlukan sinkronisasi kalender Google Calendar / Outlook.
 - Tidak diperlukan fitur arsip PDF laporan bulanan.
+
+---
+
+# EKSKLUSIVITAS FILE (ZERO MERGE CONFLICT)
+Programmer yang mengerjakan PRD ini (Monthly Budget Selector & Period Navigation) **HANYA** membuat dan mengedit file berikut:
+- `src/lib/date.ts`
+- `src/components/dashboard/month-selector.tsx`
+- `src/app/dashboard/page.tsx`
+- `src/actions/dashboard.ts` (penyesuaian parameter filter `month` & `year` untuk riwayat transaksi)
+*(Dilarang mengedit file schema database `src/db/schema/budgets.ts`, form modal `src/components/budget/budget-form-modal.tsx`, atau file auth di folder `(auth)`)*
+
