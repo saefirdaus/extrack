@@ -42,6 +42,12 @@ export function BudgetSummaryCard({ summary }: BudgetSummaryCardProps) {
       barClass: 'bg-gray-300',
       description: '',
     },
+    unbudgeted: {
+      label: 'Belum Diatur',
+      badgeClass: 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-600',
+      barClass: 'bg-gray-300',
+      description: '',
+    },
   };
 
   const currentStatus = statusConfig[summary.status];

@@ -3,7 +3,7 @@
  * Sesuai spesifikasi prd-budget-summary-indikator-2.md.
  */
 
-export type BudgetStatus = 'safe' | 'warning' | 'danger' | 'unbudgeted';
+export type BudgetStatus = 'safe' | 'warning' | 'danger' | 'unbudgeted' | 'none';
 
 /**
  * Menghitung persentase penggunaan anggaran.

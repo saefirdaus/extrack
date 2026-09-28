@@ -1,21 +1,40 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-<<<<<<< HEAD
-import { eq, and } from 'drizzle-orm';
+import { eq, and, gte, lte } from 'drizzle-orm';
 import { db } from '@/db';
 import { budgets, type Budget } from '@/db/schema/budgets';
+import { transactions } from '@/db/schema/transactions';
 import { getCurrentUser } from '@/lib/auth/session';
 import {
   validateBudgetInput,
   type BudgetValidationErrors,
 } from '@/lib/validation/budget';
+import { getMonthDateRange, formatMonthYear } from '@/lib/date';
 
 export interface SetBudgetResult {
   success: boolean;
   message?: string;
   data?: Budget;
   errors?: BudgetValidationErrors;
+}
+
+export type SetBudgetState = SetBudgetResult;
+
+export type BudgetStatus = 'safe' | 'warning' | 'danger' | 'unbudgeted' | 'none';
+
+export interface BudgetSummary {
+  month: number;
+  year: number;
+  monthYearLabel: string;
+  hasBudget: boolean;
+  budgetAmount: number;
+  totalExpense: number;
+  remainingBudget: number;
+  percentage: number;
+  usagePercentage: number;
+  status: BudgetStatus;
+  error?: string | null;
 }
 
 /**
@@ -27,7 +46,7 @@ export async function setBudgetAction(
   formData: FormData
 ): Promise<SetBudgetResult> {
   const user = await getCurrentUser();
-  if (!user) {
+  if (!user || !user.id) {
     return {
       success: false,
       message: 'Sesi tidak valid atau telah berakhir. Silakan login kembali.',
@@ -56,82 +75,13 @@ export async function setBudgetAction(
 
   try {
     const [savedBudget] = await db
-=======
-import { eq, and, gte, lte } from 'drizzle-orm';
-import { db } from '@/db';
-import { budgets } from '@/db/schema/budgets';
-import { transactions } from '@/db/schema/transactions';
-import { getCurrentUser } from '@/lib/auth/session';
-import { setBudgetSchema } from '@/lib/validation/budget';
-import { getMonthDateRange } from '@/lib/date';
-
-export type BudgetStatus = 'none' | 'safe' | 'warning' | 'danger';
-
-export interface BudgetSummary {
-  month: number;
-  year: number;
-  hasBudget: boolean;
-  budgetAmount: number;
-  totalExpense: number;
-  remainingBudget: number;
-  percentage: number;
-  status: BudgetStatus;
-  error?: string | null;
-}
-
-export interface SetBudgetState {
-  success?: boolean;
-  message?: string;
-  errors?: {
-    amount?: string[];
-    month?: string[];
-    year?: string[];
-  };
-}
-
-/**
- * Server Action untuk menetapkan atau memperbarui plafon anggaran bulanan (Upsert Pattern).
- * Dilindungi dengan otorisasi Owner Isolation dari session pengguna login.
- */
-export async function setBudgetAction(
-  _prevState: SetBudgetState,
-  formData: FormData
-): Promise<SetBudgetState> {
-  try {
-    const user = await getCurrentUser();
-    if (!user || !user.id) {
-      return { success: false, message: 'Sesi tidak valid. Silakan login kembali.' };
-    }
-
-    const rawData = {
-      amount: formData.get('amount'),
-      month: formData.get('month'),
-      year: formData.get('year'),
-    };
-
-    const validated = setBudgetSchema.safeParse(rawData);
-    if (!validated.success) {
-      return {
-        success: false,
-        errors: validated.error.flatten().fieldErrors,
-      };
-    }
-
-    const { amount, month, year } = validated.data;
-
-    // Upsert menggunakan onConflictDoUpdate pada kombinasi uniqueIndex (userId, month, year)
-    await db
->>>>>>> feat/monthly-budget
       .insert(budgets)
       .values({
         userId: user.id,
         month,
         year,
         amount,
-<<<<<<< HEAD
-=======
         updatedAt: new Date(),
->>>>>>> feat/monthly-budget
       })
       .onConflictDoUpdate({
         target: [budgets.userId, budgets.month, budgets.year],
@@ -139,7 +89,6 @@ export async function setBudgetAction(
           amount,
           updatedAt: new Date(),
         },
-<<<<<<< HEAD
       })
       .returning();
 
@@ -155,23 +104,11 @@ export async function setBudgetAction(
     return {
       success: false,
       message: 'Gagal menyimpan anggaran ke database. Silakan coba kembali.',
-=======
-      });
-
-    revalidatePath('/dashboard');
-    return { success: true, message: 'Anggaran bulanan berhasil disimpan.' };
-  } catch (error) {
-    console.error('Error executing setBudgetAction:', error);
-    return {
-      success: false,
-      message: 'Terjadi kesalahan pada server saat menyimpan anggaran.',
->>>>>>> feat/monthly-budget
     };
   }
 }
 
 /**
-<<<<<<< HEAD
  * Mengambil data anggaran bulanan milik pengguna aktif untuk periode bulan dan tahun tertentu.
  */
 export async function getBudgetAction(
@@ -190,16 +127,37 @@ export async function getBudgetAction(
       .where(
         and(
           eq(budgets.userId, user.id),
-=======
+          eq(budgets.month, month),
+          eq(budgets.year, year)
+        )
+      )
+      .limit(1);
+
+    return result[0] || null;
+  } catch (error) {
+    console.error('Database error in getBudgetAction:', error);
+    return null;
+  }
+}
+
+/**
  * Mengambil ringkasan anggaran bulanan, total pengeluaran aktual, sisa anggaran, dan indikator status.
  */
 export async function getMonthlyBudgetSummary(
   userId: number,
-  month: number,
-  year: number
+  month?: number,
+  year?: number
 ): Promise<BudgetSummary> {
+  const now = new Date();
+  const targetMonth =
+    typeof month === 'number' && month >= 1 && month <= 12 ? month : now.getMonth() + 1;
+  const targetYear =
+    typeof year === 'number' && year >= 2020 && year <= 2099 ? year : now.getFullYear();
+
+  const monthYearLabel = formatMonthYear(targetMonth, targetYear);
+  const { startDate, endDate } = getMonthDateRange(targetMonth, targetYear);
+
   try {
-    // 1. Ambil data anggaran pada bulan & tahun bersangkutan
     const budgetRecords = await db
       .select({
         id: budgets.id,
@@ -209,24 +167,14 @@ export async function getMonthlyBudgetSummary(
       .where(
         and(
           eq(budgets.userId, userId),
->>>>>>> feat/monthly-budget
-          eq(budgets.month, month),
-          eq(budgets.year, year)
+          eq(budgets.month, targetMonth),
+          eq(budgets.year, targetYear)
         )
       )
       .limit(1);
 
-<<<<<<< HEAD
-    return result[0] || null;
-  } catch (error) {
-    console.error('Database error in getBudgetAction:', error);
-    return null;
-=======
     const hasBudget = budgetRecords.length > 0;
     const budgetAmount = hasBudget ? Number(budgetRecords[0].amount) : 0;
-
-    // 2. Ambil total pengeluaran aktual (expense) pada bulan & tahun bersangkutan
-    const { startDate, endDate } = getMonthDateRange(month, year);
 
     const userExpenseTransactions = await db
       .select({
@@ -256,38 +204,42 @@ export async function getMonthlyBudgetSummary(
     let status: BudgetStatus = 'none';
     if (hasBudget) {
       if (percentage >= 100) {
-        status = 'danger'; // Overbudget (>= 100%)
+        status = 'danger';
       } else if (percentage >= 70) {
-        status = 'warning'; // Waspada (70% - 99.9%)
+        status = 'warning';
       } else {
-        status = 'safe'; // Aman (< 70%)
+        status = 'safe';
       }
     }
 
     return {
-      month,
-      year,
+      month: targetMonth,
+      year: targetYear,
+      monthYearLabel,
       hasBudget,
       budgetAmount,
       totalExpense,
       remainingBudget,
       percentage,
+      usagePercentage: percentage,
       status,
       error: null,
     };
   } catch (error) {
     console.error('Error fetching getMonthlyBudgetSummary:', error);
     return {
-      month,
-      year,
+      month: targetMonth,
+      year: targetYear,
+      monthYearLabel,
       hasBudget: false,
       budgetAmount: 0,
       totalExpense: 0,
       remainingBudget: 0,
       percentage: 0,
+      usagePercentage: 0,
       status: 'none',
-      error: 'DATABASE_ERROR',
+      error: 'Gagal memuat ringkasan anggaran.',
     };
->>>>>>> feat/monthly-budget
   }
 }
+

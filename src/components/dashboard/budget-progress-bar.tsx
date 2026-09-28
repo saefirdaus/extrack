@@ -15,6 +15,7 @@ export function BudgetProgressBar({ percentage, status }: BudgetProgressBarProps
     warning: 'Waspada',
     danger: 'Overbudget',
     unbudgeted: 'Belum Ditetapkan',
+    none: 'Belum Ditetapkan',
   };
 
   // Pewarnaan dinamis untuk progress bar fill
@@ -23,6 +24,7 @@ export function BudgetProgressBar({ percentage, status }: BudgetProgressBarProps
     warning: 'bg-amber-500 dark:bg-amber-400',
     danger: 'bg-rose-500 dark:bg-rose-400',
     unbudgeted: 'bg-zinc-400 dark:bg-zinc-600',
+    none: 'bg-zinc-400 dark:bg-zinc-600',
   };
 
   // Styling badge status
@@ -31,6 +33,7 @@ export function BudgetProgressBar({ percentage, status }: BudgetProgressBarProps
     warning: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-800',
     danger: 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-400 dark:border-rose-800',
     unbudgeted: 'bg-zinc-50 text-zinc-600 border-zinc-200 dark:bg-zinc-900 dark:text-zinc-400 dark:border-zinc-800',
+    none: 'bg-zinc-50 text-zinc-600 border-zinc-200 dark:bg-zinc-900 dark:text-zinc-400 dark:border-zinc-800',
   };
 
   return (
