@@ -1,9 +1,10 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { eq, and, desc } from 'drizzle-orm';
+import { eq, and, desc, gte, lte } from 'drizzle-orm';
 import { db } from '@/db';
 import { transactions, type Transaction } from '@/db/schema/transactions';
+import { getMonthDateRange } from '@/lib/date';
 import {
   setFilterPreference,
   isValidFilter,
@@ -42,11 +43,14 @@ export async function saveFilterPreferenceAction(filterValue: string): Promise<v
 
 /**
  * Mengambil ringkasan keuangan dan 5 transaksi terbaru milik current user.
+ * Mendukung pemilahan periode bulan dan tahun opsional.
  * Menerapkan isolasi user (Owner Isolation) dan penanganan kegagalan database secara aman.
  */
 export async function getDashboardData(
   userId: number,
-  filter: TransactionFilter
+  filter: TransactionFilter,
+  month?: number,
+  year?: number
 ): Promise<DashboardData> {
   try {
     // 1. Ambil seluruh transaksi milik user untuk kalkulasi total agregasi
@@ -73,11 +77,20 @@ export async function getDashboardData(
     const currentBalance = totalIncome - totalExpense;
     const hasTransactions = allUserTransactions.length > 0;
 
-    // 2. Ambil 5 transaksi terbaru sesuai preferensi filter
-    const whereConditions =
+    // 2. Ambil 5 transaksi terbaru sesuai preferensi filter dan periode (jika ada)
+    let whereConditions =
       filter === 'all'
         ? eq(transactions.userId, userId)
         : and(eq(transactions.userId, userId), eq(transactions.type, filter));
+
+    if (month && year) {
+      const { startDate, endDate } = getMonthDateRange(month, year);
+      whereConditions = and(
+        whereConditions,
+        gte(transactions.transactionDate, startDate),
+        lte(transactions.transactionDate, endDate)
+      );
+    }
 
     const recentTransactions = await db
       .select()
