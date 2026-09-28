@@ -6,7 +6,9 @@ import {
   type TransactionFilter,
 } from '@/lib/cookies/preference';
 import { getDashboardData } from '@/actions/dashboard';
+import { getMonthlyBudgetSummary } from '@/actions/budget-summary';
 import { SummaryCards } from '@/components/dashboard/summary-cards';
+import { BudgetSection } from '@/components/dashboard/budget-section';
 import { FilterSelector } from '@/components/dashboard/filter-selector';
 import { RecentTransactionsList } from '@/components/dashboard/recent-transactions-list';
 
@@ -27,7 +29,15 @@ export default async function DashboardPage(props: DashboardPageProps) {
     activeFilter = paramFilter;
   }
 
-  const data = await getDashboardData(user.id, activeFilter);
+  const paramMonth =
+    typeof searchParams?.month === 'string' ? parseInt(searchParams.month, 10) : undefined;
+  const paramYear =
+    typeof searchParams?.year === 'string' ? parseInt(searchParams.year, 10) : undefined;
+
+  const [data, budgetSummary] = await Promise.all([
+    getDashboardData(user.id, activeFilter),
+    getMonthlyBudgetSummary(user.id, paramMonth, paramYear),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -46,6 +56,9 @@ export default async function DashboardPage(props: DashboardPageProps) {
         totalIncome={data.totalIncome}
         totalExpense={data.totalExpense}
       />
+
+      {/* Monthly Budget Summary & Indicator */}
+      <BudgetSection summary={budgetSummary} />
 
       {/* Filter Selector */}
       <FilterSelector currentFilter={activeFilter} />
